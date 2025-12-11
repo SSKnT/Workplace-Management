@@ -1,0 +1,126 @@
+@model AttendanceSystem.ViewModels.StudentAttendanceDetailViewModel
+@{
+    ViewData["Title"] = "Course Attendance";
+    var attendanceClass = Model.AttendancePercentage >= 75 ? "success" : 
+                          Model.AttendancePercentage >= 50 ? "warning" : "danger";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-calendar-check"></i> Attendance Details</h2>
+            <p class="text-muted mb-0">
+                <strong>@Model.Course.CourseCode</strong> - @Model.Course.Name
+            </p>
+        </div>
+        <div>
+            <a asp-action="ExportCourseAttendance" asp-route-id="@Model.Course.Id" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+            </a>
+            <a asp-action="MyCourses" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Courses
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-@attendanceClass">
+            <div class="card-body">
+                <h6 class="card-title text-white-50">Attendance Rate</h6>
+                <h2 class="mb-0">@Model.AttendancePercentage.ToString("F1")%</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Present</h6>
+                <h3 class="mb-0 text-success">@Model.PresentCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Absent</h6>
+                <h3 class="mb-0 text-danger">@Model.AbsentCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Late</h6>
+                <h3 class="mb-0 text-warning">@Model.LateCount</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Total Classes</h6>
+                <h3 class="mb-0">@Model.TotalClasses</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-list-check"></i> Attendance Records</h5>
+    </div>
+    <div class="card-body">
+        @if (!Model.AttendanceRecords.Any())
+        {
+            <div class="text-center py-4">
+                <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                <p class="text-muted mt-3">No attendance records yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                            <th>Marked By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model.AttendanceRecords)
+                        {
+                            var statusBadge = record.Status switch
+                            {
+                                AttendanceStatus.Present => "bg-success",
+                                AttendanceStatus.Absent => "bg-danger",
+                                AttendanceStatus.Late => "bg-warning",
+                                AttendanceStatus.Excused => "bg-info",
+                                _ => "bg-secondary"
+                            };
+
+                            <tr>
+                                <td>
+                                    <i class="bi bi-calendar3"></i> @record.Date.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    <span class="badge @statusBadge">@record.Status</span>
+                                </td>
+                                <td>@(record.Remarks ?? "-")</td>
+                                <td>
+                                    <small class="text-muted">
+                                        @(record.MarkedBy?.FullName ?? "System")
+                                    </small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

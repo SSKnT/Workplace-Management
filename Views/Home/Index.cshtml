@@ -1,0 +1,211 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="mb-4">
+        <h2>Welcome back, <strong>@User.Identity.Name</strong>! 👋</h2>
+        <p class="text-muted">Here's your attendance overview</p>
+    </div>
+
+    <div class="row g-4">
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Total Courses</h6>
+                                <h3 class="mb-0">@ViewBag.TotalCourses</h3>
+                            </div>
+                            <i class="bi bi-book" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Total Teachers</h6>
+                                <h3 class="mb-0">@ViewBag.TotalTeachers</h3>
+                            </div>
+                            <i class="bi bi-person-badge" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Total Students</h6>
+                                <h3 class="mb-0">@ViewBag.TotalStudents</h3>
+                            </div>
+                            <i class="bi bi-people" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Total Enrollments</h6>
+                                <h3 class="mb-0">@ViewBag.TotalEnrollments</h3>
+                            </div>
+                            <i class="bi bi-calendar-check" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (User.IsInRole("Teacher"))
+        {
+            <div class="col-md-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">My Courses</h6>
+                                <h3 class="mb-0">@ViewBag.MyCourses</h3>
+                            </div>
+                            <i class="bi bi-book" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Total Students</h6>
+                                <h3 class="mb-0">@ViewBag.TotalStudents</h3>
+                            </div>
+                            <i class="bi bi-people" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Classes Today</h6>
+                                <h3 class="mb-0">@ViewBag.TodaysClasses</h3>
+                            </div>
+                            <i class="bi bi-calendar-check" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (User.IsInRole("Student"))
+        {
+            <div class="col-md-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">My Courses</h6>
+                                <h3 class="mb-0">@ViewBag.EnrolledCourses</h3>
+                            </div>
+                            <i class="bi bi-book" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Attendance Rate</h6>
+                                <h3 class="mb-0">@ViewBag.AttendanceRate%</h3>
+                            </div>
+                            <i class="bi bi-graph-up" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-white-50 mb-2">Total Attendance</h6>
+                                <h3 class="mb-0">@ViewBag.TotalAttendance</h3>
+                            </div>
+                            <i class="bi bi-calendar-week" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-clock-history"></i> Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">No recent activity to display</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-info-circle"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+                        {
+                            <a asp-controller="Course" asp-action="Index" class="btn btn-outline-primary">
+                                <i class="bi bi-book"></i> Manage Courses
+                            </a>
+                            <a asp-controller="Attendance" asp-action="Index" class="btn btn-outline-success">
+                                <i class="bi bi-check2-square"></i> Mark Attendance
+                            </a>
+                        }
+                        @if (User.IsInRole("Student"))
+                        {
+                            <a asp-controller="Student" asp-action="MyCourses" class="btn btn-outline-primary">
+                                <i class="bi bi-book"></i> My Courses
+                            </a>
+                            <a asp-controller="Student" asp-action="MyAttendance" class="btn btn-outline-success">
+                                <i class="bi bi-calendar-check"></i> View Attendance
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-calendar-check" style="font-size: 5rem; color: #0d6efd;"></i>
+        <h1 class="display-4 mt-4">Welcome to Attendance System</h1>
+        <p class="lead">Streamline your attendance management with ease</p>
+        <div class="mt-4">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg me-2">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-person-plus"></i> Register
+            </a>
+        </div>
+    </div>
+}

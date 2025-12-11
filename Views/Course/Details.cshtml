@@ -1,0 +1,94 @@
+@model AttendanceSystem.Models.Course
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4><i class="bi bi-info-circle"></i> Course Information</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Course Code</dt>
+                    <dd class="col-sm-9"><strong class="text-primary">@Model.CourseCode</strong></dd>
+                    
+                    <dt class="col-sm-3">Course Name</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+                    
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">@(Model.Description ?? "No description available")</dd>
+                    
+                    <dt class="col-sm-3">Credit Hours</dt>
+                    <dd class="col-sm-9"><span class="badge bg-info">@Model.CreditHours credits</span></dd>
+                    
+                    <dt class="col-sm-3">Teacher</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Teacher != null)
+                        {
+                            <span class="badge bg-success">@Model.Teacher.FullName</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Not assigned</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">Created</dt>
+                    <dd class="col-sm-9">@Model.CreatedAt.ToString("MMM dd, yyyy")</dd>
+                </dl>
+                
+                <div class="mt-4">
+                    <a asp-controller="Enrollment" asp-action="Manage" asp-route-id="@Model.Id" class="btn btn-success">
+                        <i class="bi bi-people"></i> Manage Enrollments
+                    </a>
+                    <a asp-controller="Attendance" asp-action="ExportCourseSummary" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                        <i class="bi bi-file-earmark-pdf"></i> Export Summary
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    }
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-people"></i> Enrolled Students (@Model.Enrollments.Count)</h5>
+            </div>
+            <div class="card-body">
+                @if (!Model.Enrollments.Any())
+                {
+                    <p class="text-muted text-center">No students enrolled yet.</p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var enrollment in Model.Enrollments.OrderBy(e => e.Student.FullName))
+                        {
+                            <li class="list-group-item px-0">
+                                <i class="bi bi-person-circle"></i> @enrollment.Student.FullName
+                                <small class="text-muted d-block">@enrollment.Student.Email</small>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,175 @@
+@model AttendanceSystem.ViewModels.MarkAttendanceViewModel
+@{
+    ViewData["Title"] = "Mark Attendance";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-check2-square"></i> Mark Attendance</h2>
+            <p class="text-muted mb-0">
+                <strong>@Model.Course.CourseCode</strong> - @Model.Course.Name
+                @if (Model.Course.Teacher != null)
+                {
+                    <span class="badge bg-info ms-2">@Model.Course.Teacher.FullName</span>
+                }
+            </p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Courses
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Mark" method="get" class="row g-3 align-items-end">
+            <input type="hidden" name="id" value="@Model.Course.Id" />
+            <div class="col-md-4">
+                <label for="dateInput" class="form-label"><i class="bi bi-calendar3"></i> Select Date</label>
+                <input type="date" class="form-control" id="dateInput" name="date" 
+                       value="@Model.SelectedDate.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Load
+                </button>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group me-2" role="group">
+                    <button type="button" class="btn btn-outline-success" onclick="markAll('Present')">
+                        <i class="bi bi-check-circle"></i> All Present
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" onclick="markAll('Absent')">
+                        <i class="bi bi-x-circle"></i> All Absent
+                    </button>
+                </div>
+                @if (Model.StudentAttendance.Any(sa => sa.AttendanceRecordId.HasValue))
+                {
+                    <a asp-action="ExportDaily" asp-route-id="@Model.Course.Id" asp-route-date="@Model.SelectedDate.ToString("yyyy-MM-dd")" 
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                    </a>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.StudentAttendance.Any())
+{
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i> No students enrolled in this course.
+        <a asp-controller="Enrollment" asp-action="Manage" asp-route-id="@Model.Course.Id" class="alert-link">
+            Manage Enrollments
+        </a>
+    </div>
+}
+else
+{
+    <form asp-action="Mark" method="post">
+        <input type="hidden" asp-for="CourseId" value="@Model.Course.Id" />
+        <input type="hidden" asp-for="SelectedDate" />
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-people"></i> Students (@Model.StudentAttendance.Count)
+                    <span class="float-end text-muted">Date: @Model.SelectedDate.ToString("MMM dd, yyyy")</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%">#</th>
+                                <th style="width: 30%">Student Name</th>
+                                <th style="width: 25%">Email</th>
+                                <th style="width: 20%">Status</th>
+                                <th style="width: 20%">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.StudentAttendance.Count; i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>
+                                        <i class="bi bi-person-circle"></i> @Model.StudentAttendance[i].StudentName
+                                        <input type="hidden" asp-for="StudentAttendance[i].StudentId" />
+                                        <input type="hidden" asp-for="StudentAttendance[i].StudentName" />
+                                        <input type="hidden" asp-for="StudentAttendance[i].StudentEmail" />
+                                        <input type="hidden" asp-for="StudentAttendance[i].EnrollmentId" />
+                                        <input type="hidden" asp-for="StudentAttendance[i].AttendanceRecordId" />
+                                    </td>
+                                    <td><small class="text-muted">@Model.StudentAttendance[i].StudentEmail</small></td>
+                                    <td>
+                                        <select asp-for="StudentAttendance[i].Status" class="form-select form-select-sm status-select">
+                                            <option value="0" selected="@(Model.StudentAttendance[i].Status == AttendanceStatus.Present)">Present</option>
+                                            <option value="1" selected="@(Model.StudentAttendance[i].Status == AttendanceStatus.Absent)">Absent</option>
+                                            <option value="2" selected="@(Model.StudentAttendance[i].Status == AttendanceStatus.Late)">Late</option>
+                                            <option value="3" selected="@(Model.StudentAttendance[i].Status == AttendanceStatus.Excused)">Excused</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input asp-for="StudentAttendance[i].Remarks" class="form-control form-control-sm" 
+                                               placeholder="Optional note" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-check-circle"></i> Save Attendance
+                </button>
+            </div>
+        </div>
+    </form>
+}
+
+<form id="markAllForm" asp-action="MarkAll" method="post" style="display: none;">
+    <input type="hidden" name="courseId" value="@Model.Course.Id" />
+    <input type="hidden" name="date" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
+    <input type="hidden" name="status" id="markAllStatus" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function markAll(status) {
+            if (confirm(`Are you sure you want to mark all students as ${status}?`)) {
+                document.getElementById('markAllStatus').value = status;
+                document.getElementById('markAllForm').submit();
+            }
+        }
+
+        // Color code the status selects
+        document.querySelectorAll('.status-select').forEach(select => {
+            updateSelectColor(select);
+            select.addEventListener('change', function() {
+                updateSelectColor(this);
+            });
+        });
+
+        function updateSelectColor(select) {
+            select.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white');
+            const value = select.value;
+            if (value === '0') select.classList.add('bg-success', 'text-white');
+            else if (value === '1') select.classList.add('bg-danger', 'text-white');
+            else if (value === '2') select.classList.add('bg-warning', 'text-white');
+            else if (value === '3') select.classList.add('bg-info', 'text-white');
+        }
+    </script>
+}
