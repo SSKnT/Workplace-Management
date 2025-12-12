@@ -3,20 +3,20 @@
     ViewData["Title"] = "My Courses";
 }
 
-<div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center">
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-start">
         <div>
-            <h2><i class="bi bi-book"></i> My Courses</h2>
-            <p class="text-muted mb-0">View your enrolled courses and attendance</p>
+            <h1 class="page-title mb-2">My Courses</h1>
+            <p class="page-subtitle mb-0">View your enrolled courses and track attendance</p>
         </div>
-        <div>
-            <a asp-action="AvailableCourses" class="btn btn-primary me-2">
+        <div class="d-flex gap-2">
+            <a asp-action="AvailableCourses" class="btn btn-gradient">
                 <i class="bi bi-plus-circle"></i> Enroll in Courses
             </a>
             @if (Model.Any())
             {
-                <a asp-action="ExportMyAttendance" class="btn btn-outline-primary">
-                    <i class="bi bi-file-earmark-pdf"></i> Export All Attendance
+                <a asp-action="ExportMyAttendance" class="btn btn-outline-gradient">
+                    <i class="bi bi-file-earmark-pdf"></i> Export PDF
                 </a>
             }
         </div>
@@ -41,79 +41,105 @@
 
 @if (!Model.Any())
 {
-    <div class="card">
-        <div class="card-body text-center py-5">
-            <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
-            <p class="text-muted mt-3">You are not enrolled in any courses yet.</p>
-            <a asp-action="AvailableCourses" class="btn btn-primary mt-2">
-                <i class="bi bi-plus-circle"></i> Browse Available Courses
-            </a>
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="bi bi-book"></i>
         </div>
+        <h3 class="empty-state-title">No Courses Yet</h3>
+        <p class="empty-state-text">You haven't enrolled in any courses. Start learning by browsing available courses.</p>
+        <a asp-action="AvailableCourses" class="btn btn-gradient btn-lg">
+            <i class="bi bi-plus-circle"></i> Browse Available Courses
+        </a>
     </div>
 }
 else
 {
-    <div class="row">
+    <div class="row g-4">
         @foreach (var courseViewModel in Model)
         {
             var attendanceClass = courseViewModel.AttendancePercentage >= 75 ? "success" : 
                                   courseViewModel.AttendancePercentage >= 50 ? "warning" : "danger";
+            var attendanceStatus = courseViewModel.AttendancePercentage >= 75 ? "Excellent" : 
+                                   courseViewModel.AttendancePercentage >= 50 ? "Fair" : "Poor";
             
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="bi bi-book-fill text-primary"></i> @courseViewModel.Course.Name
-                        </h5>
-                        <p class="card-text">
-                            <strong>@courseViewModel.Course.CourseCode</strong><br/>
-                            <small class="text-muted">
-                                <i class="bi bi-person-badge"></i> 
-                                @(courseViewModel.Course.Teacher?.FullName ?? "No teacher assigned")
-                            </small>
-                        </p>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="small">Attendance</span>
-                                <span class="small fw-bold">@courseViewModel.AttendancePercentage.ToString("F1")%</span>
+            <div class="col-md-6 col-xl-4">
+                <div class="course-card">
+                    <div class="course-card-header">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="course-code">@courseViewModel.Course.CourseCode</span>
+                            <span class="badge bg-@attendanceClass">@attendanceStatus</span>
+                        </div>
+                        <h5 class="course-title">@courseViewModel.Course.Name</h5>
+                        <div class="course-teacher">
+                            <i class="bi bi-person-circle"></i>
+                            @(courseViewModel.Course.Teacher?.FullName ?? "No teacher assigned")
+                        </div>
+                    </div>
+                    
+                    <div class="course-card-body">
+                        <div class="attendance-stats">
+                            <div class="attendance-header">
+                                <span class="attendance-label">Attendance Rate</span>
+                                <span class="attendance-value">@courseViewModel.AttendancePercentage.ToString("F1")%</span>
                             </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-@attendanceClass" role="progressbar" 
-                                     style="width: @courseViewModel.AttendancePercentage%" 
-                                     aria-valuenow="@courseViewModel.AttendancePercentage" 
-                                     aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-modern">
+                                <div class="progress-bar-modern bg-@attendanceClass" 
+                                     style="width: @courseViewModel.AttendancePercentage%">
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <small class="text-muted">
-                                @courseViewModel.AttendedClasses / @courseViewModel.TotalClasses classes
-                            </small>
-                            <div class="btn-group">
-                                <a asp-action="MyAttendance" asp-route-id="@courseViewModel.Course.Id" 
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-list-check"></i> Details
-                                </a>
-                                <a asp-action="ExportCourseAttendance" asp-route-id="@courseViewModel.Course.Id" 
-                                   class="btn btn-sm btn-outline-secondary" title="Export PDF">
-                                    <i class="bi bi-file-earmark-pdf"></i>
-                                </a>
+                            <div class="attendance-details">
+                                <span><i class="bi bi-check-circle text-success"></i> @courseViewModel.AttendedClasses Present</span>
+                                <span><i class="bi bi-calendar3"></i> @courseViewModel.TotalClasses Total</span>
                             </div>
                         </div>
                         
-                        <form asp-action="DropCourse" method="post" class="mt-2">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="courseId" value="@courseViewModel.Course.Id" />
-                            <button type="submit" class="btn btn-sm btn-outline-danger w-100" 
-                                    onclick="return confirm('Are you sure you want to drop @courseViewModel.Course.Name? This action cannot be undone.');">
-                                <i class="bi bi-x-circle"></i> Drop Course
-                            </button>
-                        </form>
+                        <div class="course-actions">
+                            <a asp-action="MyAttendance" asp-route-id="@courseViewModel.Course.Id" 
+                               class="btn btn-light-primary w-100 mb-2">
+                                <i class="bi bi-list-check"></i> View Attendance Details
+                            </a>
+                            <div class="d-flex gap-2">
+                                <a asp-action="ExportCourseAttendance" asp-route-id="@courseViewModel.Course.Id" 
+                                   class="btn btn-outline-secondary flex-fill">
+                                    <i class="bi bi-download"></i> Export PDF
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#dropModal@(courseViewModel.Course.Id)">
+                                    <i class="bi bi-x-circle"></i> Drop
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer text-muted small">
-                        <i class="bi bi-calendar-check"></i> Enrolled: @courseViewModel.EnrolledDate.ToString("MMM dd, yyyy")
+                    
+                    <div class="course-card-footer">
+                        <i class="bi bi-calendar-check"></i> Enrolled @courseViewModel.EnrolledDate.ToString("MMM dd, yyyy")
+                    </div>
+                </div>
+                
+                <!-- Drop Course Modal -->
+                <div class="modal fade" id="dropModal@(courseViewModel.Course.Id)" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Drop Course</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to drop <strong>@courseViewModel.Course.Name</strong>?</p>
+                                <p class="text-danger mb-0"><i class="bi bi-exclamation-triangle"></i> This action will deactivate your enrollment.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form asp-action="DropCourse" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="courseId" value="@courseViewModel.Course.Id" />
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-x-circle"></i> Drop Course
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

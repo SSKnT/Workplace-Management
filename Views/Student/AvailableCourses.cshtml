@@ -3,13 +3,13 @@
     ViewData["Title"] = "Available Courses";
 }
 
-<div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center">
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-start">
         <div>
-            <h2><i class="bi bi-search"></i> Available Courses</h2>
-            <p class="text-muted mb-0">Browse and enroll in courses</p>
+            <h1 class="page-title mb-2">Available Courses</h1>
+            <p class="page-subtitle mb-0">Browse and enroll in courses to start your learning journey</p>
         </div>
-        <a asp-action="MyCourses" class="btn btn-outline-secondary">
+        <a asp-action="MyCourses" class="btn btn-outline-gradient">
             <i class="bi bi-book"></i> My Enrolled Courses
         </a>
     </div>
@@ -33,72 +33,102 @@
 
 @if (!Model.Any())
 {
-    <div class="card">
-        <div class="card-body text-center py-5">
-            <i class="bi bi-check-circle" style="font-size: 3rem; color: #28a745;"></i>
-            <h4 class="mt-3">All Caught Up!</h4>
-            <p class="text-muted">You are enrolled in all available courses.</p>
-            <a asp-action="MyCourses" class="btn btn-primary mt-2">
-                <i class="bi bi-book"></i> View My Courses
-            </a>
+    <div class="empty-state">
+        <div class="empty-state-icon success">
+            <i class="bi bi-check-circle"></i>
         </div>
+        <h3 class="empty-state-title">All Caught Up!</h3>
+        <p class="empty-state-text">You're enrolled in all available courses. Great work!</p>
+        <a asp-action="MyCourses" class="btn btn-gradient btn-lg">
+            <i class="bi bi-book"></i> View My Courses
+        </a>
     </div>
 }
 else
 {
-    <div class="row">
+    <div class="row g-4">
         @foreach (var course in Model)
         {
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <div class="mb-3">
-                            <span class="badge bg-primary mb-2">@course.CourseCode</span>
-                            <h5 class="card-title">
-                                <i class="bi bi-book-fill text-primary"></i> @course.Name
-                            </h5>
+            <div class="col-md-6 col-xl-4">
+                <div class="available-course-card">
+                    <div class="available-course-header">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="course-code-badge">@course.CourseCode</span>
+                            <span class="enrollment-badge">
+                                <i class="bi bi-people"></i> @course.Enrollments.Count
+                            </span>
                         </div>
+                        <h5 class="course-title mb-3">@course.Name</h5>
                         
-                        <div class="mb-3">
-                            <p class="card-text mb-2">
-                                <i class="bi bi-clock text-muted"></i>
-                                <strong>Credit Hours:</strong> @course.CreditHours
-                            </p>
-                            <p class="card-text mb-2">
-                                <i class="bi bi-person-badge text-muted"></i>
-                                <strong>Teacher:</strong> 
-                                @if (course.Teacher != null)
-                                {
-                                    <span>@course.Teacher.FullName</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Not assigned</span>
-                                }
-                            </p>
-                            <p class="card-text mb-2">
-                                <i class="bi bi-people text-muted"></i>
-                                <strong>Enrolled Students:</strong> 
-                                <span class="badge bg-secondary">@course.Enrollments.Count</span>
-                            </p>
+                        <div class="course-meta">
+                            <div class="meta-item">
+                                <i class="bi bi-clock"></i>
+                                <span>@course.CreditHours Credit Hours</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="bi bi-person-circle"></i>
+                                <span>
+                                    @if (course.Teacher != null)
+                                    {
+                                        @course.Teacher.FullName
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not assigned</span>
+                                    }
+                                </span>
+                            </div>
                         </div>
-
-                        @if (!string.IsNullOrEmpty(course.Description))
-                        {
-                            <p class="card-text text-muted small mb-3">
-                                @course.Description
-                            </p>
-                        }
-
-                        <div class="mt-auto">
-                            <form asp-action="EnrollInCourse" method="post" class="d-inline w-100">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="courseId" value="@course.Id" />
-                                <button type="submit" class="btn btn-success w-100" 
-                                        onclick="return confirm('Are you sure you want to enroll in @course.Name?');">
-                                    <i class="bi bi-plus-circle"></i> Enroll Now
-                                </button>
-                            </form>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(course.Description))
+                    {
+                        <div class="available-course-body">
+                            <p class="course-description">@course.Description</p>
+                        </div>
+                    }
+                    
+                    <div class="available-course-footer">
+                        <button type="button" class="btn btn-enroll w-100" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#enrollModal@(course.Id)">
+                            <i class="bi bi-plus-circle"></i> Enroll Now
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Enroll Modal -->
+                <div class="modal fade" id="enrollModal@(course.Id)" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirm Enrollment</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-3">
+                                    <div class="modal-icon">
+                                        <i class="bi bi-book"></i>
+                                    </div>
+                                </div>
+                                <h6 class="text-center mb-3">@course.Name</h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Course Code: <strong>@course.CourseCode</strong></li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Credit Hours: <strong>@course.CreditHours</strong></li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Teacher: <strong>@(course.Teacher?.FullName ?? "Not assigned")</strong></li>
+                                    <li><i class="bi bi-check-circle text-success me-2"></i> Current Students: <strong>@course.Enrollments.Count</strong></li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form asp-action="EnrollInCourse" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="courseId" value="@course.Id" />
+                                    <button type="submit" class="btn btn-gradient">
+                                        <i class="bi bi-check-circle"></i> Confirm Enrollment
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,17 +136,3 @@ else
         }
     </div>
 }
-
-<div class="mt-4">
-    <div class="card bg-light">
-        <div class="card-body">
-            <h6><i class="bi bi-info-circle text-primary"></i> Enrollment Information</h6>
-            <ul class="mb-0 small">
-                <li>You can enroll in multiple courses at once</li>
-                <li>Once enrolled, you can view your attendance and course details</li>
-                <li>You can drop a course from your "My Courses" page if needed</li>
-                <li>Contact your administrator if you have any enrollment issues</li>
-            </ul>
-        </div>
-    </div>
-</div>
