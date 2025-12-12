@@ -8,7 +8,7 @@ using AttendanceSystem.Models;
 
 namespace AttendanceSystem.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = "Admin")]
     public class EnrollmentController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -33,10 +33,6 @@ namespace AttendanceSystem.Controllers
 
             if (course == null) return NotFound();
 
-            // Teachers can only manage their own courses
-            if (User.IsInRole("Teacher") && course.TeacherId != _userManager.GetUserId(User))
-                return Forbid();
-
             // Get all students
             var students = await _userManager.GetUsersInRoleAsync("Student");
             var enrolledStudentIds = course.Enrollments.Select(e => e.StudentId).ToHashSet();
@@ -54,10 +50,6 @@ namespace AttendanceSystem.Controllers
         {
             var course = await _context.Courses.FindAsync(courseId);
             if (course == null) return NotFound();
-
-            // Teachers can only enroll in their own courses
-            if (User.IsInRole("Teacher") && course.TeacherId != _userManager.GetUserId(User))
-                return Forbid();
 
             // Check if already enrolled
             var existingEnrollment = await _context.Enrollments
@@ -91,10 +83,6 @@ namespace AttendanceSystem.Controllers
         {
             var course = await _context.Courses.FindAsync(courseId);
             if (course == null) return NotFound();
-
-            // Teachers can only enroll in their own courses
-            if (User.IsInRole("Teacher") && course.TeacherId != _userManager.GetUserId(User))
-                return Forbid();
 
             if (studentIds == null || !studentIds.Any())
             {
@@ -142,10 +130,6 @@ namespace AttendanceSystem.Controllers
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (enrollment == null) return NotFound();
-
-            // Teachers can only remove from their own courses
-            if (User.IsInRole("Teacher") && enrollment.Course.TeacherId != _userManager.GetUserId(User))
-                return Forbid();
 
             _context.Enrollments.Remove(enrollment);
             await _context.SaveChangesAsync();

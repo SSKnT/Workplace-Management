@@ -69,6 +69,113 @@ namespace AttendanceSystem.Controllers
             return View(courseViewModels);
         }
 
+        // GET: Student/AvailableCourses
+        public async Task<IActionResult> AvailableCourses()
+        {
+            var userId = _userManager.GetUserId(User);
+            
+            // Get courses student is already enrolled in
+            var enrolledCourseIds = await _context.Enrollments
+                .Where(e => e.StudentId == userId && e.IsActive)
+                .Select(e => e.CourseId)
+                .ToListAsync();
+
+            // Get all available courses not yet enrolled in
+            var availableCourses = await _context.Courses
+                .Include(c => c.Teacher)
+                .Include(c => c.Enrollments)
+                .Where(c => !enrolledCourseIds.Contains(c.Id))
+                .OrderBy(c => c.CourseCode)
+                .ToListAsync();
+
+            return View(availableCourses);
+        }
+
+        // POST: Student/EnrollInCourse
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnrollInCourse(int courseId)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            
+            // Check if course exists
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null)
+            {
+                TempData["Error"] = "Course not found.";
+                return RedirectToAction(nameof(AvailableCourses));
+            }
+
+            // Check if already enrolled
+            var existingEnrollment = await _context.Enrollments
+                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == userId);
+
+            if (existingEnrollment != null)
+            {
+                if (existingEnrollment.IsActive)
+                {
+                    TempData["Error"] = "You are already enrolled in this course.";
+                }
+                else
+                {
+                    // Reactivate enrollment
+                    existingEnrollment.IsActive = true;
+                    existingEnrollment.EnrolledAt = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = "Successfully re-enrolled in the course!";
+                }
+                return RedirectToAction(nameof(AvailableCourses));
+            }
+
+            // Create new enrollment
+            var enrollment = new Enrollment
+            {
+                CourseId = courseId,
+                StudentId = userId,
+                EnrolledAt = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            _context.Enrollments.Add(enrollment);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"Successfully enrolled in {course.Name}!";
+            return RedirectToAction(nameof(AvailableCourses));
+        }
+
+        // POST: Student/DropCourse
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DropCourse(int courseId)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            
+            var enrollment = await _context.Enrollments
+                .Include(e => e.Course)
+                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == userId && e.IsActive);
+
+            if (enrollment == null)
+            {
+                TempData["Error"] = "Enrollment not found.";
+                return RedirectToAction(nameof(MyCourses));
+            }
+
+            // Deactivate enrollment instead of deleting
+            enrollment.IsActive = false;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"Successfully dropped {enrollment.Course.Name}.";
+            return RedirectToAction(nameof(MyCourses));
+        }
+
         // GET: Student/MyAttendance/5
         public async Task<IActionResult> MyAttendance(int? id)
         {

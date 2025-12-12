@@ -9,14 +9,35 @@
             <h2><i class="bi bi-book"></i> My Courses</h2>
             <p class="text-muted mb-0">View your enrolled courses and attendance</p>
         </div>
-        @if (Model.Any())
-        {
-            <a asp-action="ExportMyAttendance" class="btn btn-outline-primary">
-                <i class="bi bi-file-earmark-pdf"></i> Export All Attendance
+        <div>
+            <a asp-action="AvailableCourses" class="btn btn-primary me-2">
+                <i class="bi bi-plus-circle"></i> Enroll in Courses
             </a>
-        }
+            @if (Model.Any())
+            {
+                <a asp-action="ExportMyAttendance" class="btn btn-outline-primary">
+                    <i class="bi bi-file-earmark-pdf"></i> Export All Attendance
+                </a>
+            }
+        </div>
     </div>
 </div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
 @if (!Model.Any())
 {
@@ -24,6 +45,9 @@
         <div class="card-body text-center py-5">
             <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
             <p class="text-muted mt-3">You are not enrolled in any courses yet.</p>
+            <a asp-action="AvailableCourses" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle"></i> Browse Available Courses
+            </a>
         </div>
     </div>
 }
@@ -63,7 +87,7 @@ else
                             </div>
                         </div>
                         
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <small class="text-muted">
                                 @courseViewModel.AttendedClasses / @courseViewModel.TotalClasses classes
                             </small>
@@ -78,6 +102,15 @@ else
                                 </a>
                             </div>
                         </div>
+                        
+                        <form asp-action="DropCourse" method="post" class="mt-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="courseId" value="@courseViewModel.Course.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100" 
+                                    onclick="return confirm('Are you sure you want to drop @courseViewModel.Course.Name? This action cannot be undone.');">
+                                <i class="bi bi-x-circle"></i> Drop Course
+                            </button>
+                        </form>
                     </div>
                     <div class="card-footer text-muted small">
                         <i class="bi bi-calendar-check"></i> Enrolled: @courseViewModel.EnrolledDate.ToString("MMM dd, yyyy")
