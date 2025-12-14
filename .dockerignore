@@ -1,0 +1,17 @@
+**/.dockerignore
+**/bin
+**/obj
+**/.vs
+**/.vscode
+**/.git
+**/.gitignore
+**/README.md
+**/docker-compose.*
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/Migrations
+**/NEXT_STEPS.md
+**/PROJECT_SUMMARY.md
+**/node_modules
+**/.env

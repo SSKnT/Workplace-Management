@@ -1,0 +1,14 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "dotnet AttendanceSystem.dll"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[[deploy.healthcheck]]
+path = "/"
+initialDelaySeconds = 30
+periodSeconds = 10
+timeoutSeconds = 5

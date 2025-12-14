@@ -2,93 +2,132 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h2 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</h2>
+<div class="page-header mb-5">
+    <div>
+        <h1 class="page-title mb-2">Admin Dashboard</h1>
+        <p class="page-subtitle mb-0">System overview and management</p>
+    </div>
+</div>
 
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm border-primary">
-            <div class="card-body text-center">
-                <i class="bi bi-people-fill text-primary" style="font-size: 2.5rem;"></i>
-                <h3 class="mt-3 mb-0">@ViewBag.TotalUsers</h3>
-                <p class="text-muted mb-0">Total Users</p>
+<div class="row g-4 mb-5">
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@ViewBag.TotalUsers</div>
+                <div class="stat-label">Total Users</div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-success">
-            <div class="card-body text-center">
-                <i class="bi bi-mortarboard-fill text-success" style="font-size: 2.5rem;"></i>
-                <h3 class="mt-3 mb-0">@ViewBag.StudentCount</h3>
-                <p class="text-muted mb-0">Students</p>
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@ViewBag.StudentCount</div>
+                <div class="stat-label">Students</div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-info">
-            <div class="card-body text-center">
-                <i class="bi bi-person-workspace text-info" style="font-size: 2.5rem;"></i>
-                <h3 class="mt-3 mb-0">@ViewBag.TeacherCount</h3>
-                <p class="text-muted mb-0">Teachers</p>
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card stat-card-info">
+            <div class="stat-icon">
+                <i class="bi bi-person-workspace"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@ViewBag.TeacherCount</div>
+                <div class="stat-label">Teachers</div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-warning">
-            <div class="card-body text-center">
-                <i class="bi bi-book-fill text-warning" style="font-size: 2.5rem;"></i>
-                <h3 class="mt-3 mb-0">@ViewBag.TotalCourses</h3>
-                <p class="text-muted mb-0">Total Courses</p>
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-icon">
+                <i class="bi bi-book-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@ViewBag.TotalCourses</div>
+                <div class="stat-label">Total Courses</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon">
+                <i class="bi bi-person-check-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@ViewBag.TotalEnrollments</div>
+                <div class="stat-label">Total Enrollments</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon">
+                <i class="bi bi-calendar-check-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@ViewBag.TotalAttendance</div>
+                <div class="stat-label">Attendance Records</div>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row g-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-person-check-fill text-primary" style="font-size: 2.5rem;"></i>
-                <h3 class="mt-3 mb-0">@ViewBag.TotalEnrollments</h3>
-                <p class="text-muted mb-0">Total Enrollments</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <i class="bi bi-calendar-check-fill text-success" style="font-size: 2.5rem;"></i>
-                <h3 class="mt-3 mb-0">@ViewBag.TotalAttendance</h3>
-                <p class="text-muted mb-0">Attendance Records</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4">
     <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light">
-                <h5 class="mb-0"><i class="bi bi-list-task me-2"></i>Quick Actions</h5>
+        <div class="action-card">
+            <div class="action-card-header">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <h5 class="mb-0">Quick Actions</h5>
             </div>
-            <div class="card-body">
+            <div class="action-card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <a asp-action="Users" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-people-fill me-2"></i>Manage Users
+                        <a asp-action="Users" class="admin-action-btn">
+                            <div class="admin-action-icon bg-primary-subtle">
+                                <i class="bi bi-people-fill text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="admin-action-title">Manage Users</div>
+                                <div class="admin-action-desc">View and edit all users</div>
+                            </div>
+                            <i class="bi bi-arrow-right ms-auto"></i>
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a asp-controller="Course" asp-action="Index" class="btn btn-outline-warning w-100">
-                            <i class="bi bi-book-fill me-2"></i>View All Courses
+                        <a asp-controller="Course" asp-action="Index" class="admin-action-btn">
+                            <div class="admin-action-icon bg-warning-subtle">
+                                <i class="bi bi-book-fill text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="admin-action-title">View Courses</div>
+                                <div class="admin-action-desc">Manage all courses</div>
+                            </div>
+                            <i class="bi bi-arrow-right ms-auto"></i>
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a asp-action="CreateUser" class="btn btn-outline-success w-100">
-                            <i class="bi bi-person-plus-fill me-2"></i>Create New User
+                        <a asp-action="CreateUser" class="admin-action-btn">
+                            <div class="admin-action-icon bg-success-subtle">
+                                <i class="bi bi-person-plus-fill text-success"></i>
+                            </div>
+                            <div>
+                                <div class="admin-action-title">Create User</div>
+                                <div class="admin-action-desc">Add new user account</div>
+                            </div>
+                            <i class="bi bi-arrow-right ms-auto"></i>
                         </a>
                     </div>
                 </div>
