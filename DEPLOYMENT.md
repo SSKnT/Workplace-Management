@@ -2,19 +2,23 @@
 
 ## Local Development Setup ✅
 Your app is now configured to:
-- Use **SQLite** locally (development)
-- Use **PostgreSQL** in production (Railway + Supabase)
+- Use **Supabase PostgreSQL** for both development and production
+- Migrations have been created and applied successfully
+
+## Important: Supabase Connection Details
+The app is configured to use:
+- **Host**: `aws-0-ap-south-1.pooler.supabase.com`
+- **Port**: `6543` (Transaction Pooler)
+- **Database**: `postgres`
+- **Username**: `postgres.vmfhtbeaeijlsaslttmt`
+
+> **Note**: Using Transaction Pooler (port 6543) because Session Pooler is recommended only for IPv4 networks.
 
 ## Deployment Steps
 
-### 1. Create Supabase Database
-1. Go to [supabase.com](https://supabase.com) and create a free account
-2. Create a new project
-3. Go to **Project Settings** → **Database**
-4. Copy the **Connection String** (URI format):
-   ```
-   postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
-   ```
+### 1. Supabase Database (Already Configured) ✅
+Your Supabase database is already set up and migrations have been applied.
+- Connection string is in `appsettings.json` and `appsettings.Production.json`
 
 ### 2. Deploy to Railway
 1. Go to [railway.app](https://railway.app) and sign in with GitHub
@@ -25,9 +29,14 @@ Your app is now configured to:
 ### 3. Configure Environment Variables in Railway
 In your Railway project dashboard:
 1. Go to **Variables** tab
-2. Add these variables:
+2. Add this variable (optional, as app uses appsettings.Production.json):
    ```
-   DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+   ASPNETCORE_ENVIRONMENT=Production
+   ```
+   
+   **Or** if you prefer using DATABASE_URL environment variable:
+   ```
+   DATABASE_URL=Host=aws-0-ap-south-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.vmfhtbeaeijlsaslttmt;Password=sohaib123_1;SSL Mode=Require;Trust Server Certificate=true
    ASPNETCORE_ENVIRONMENT=Production
    ```
 
