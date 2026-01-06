@@ -143,6 +143,58 @@ namespace AttendanceSystem.Controllers
             return RedirectToAction(nameof(Mark), new { id = model.CourseId, date = model.SelectedDate });
         }
 
+        // POST: Attendance/MarkAttendanceAjax (AJAX API)
+        [HttpPost]
+        public async Task<IActionResult> MarkAttendanceAjax([FromBody] StudentAttendanceUpdateModel model)
+        {
+            try
+            {
+                var course = await _context.Courses.FindAsync(model.CourseId);
+                if (course == null)
+                    return Json(new { success = false, message = "Course not found" });
+
+                // Teachers can only mark attendance for their own courses
+                if (User.IsInRole("Teacher") && course.TeacherId != _userManager.GetUserId(User))
+                    return Json(new { success = false, message = "Unauthorized" });
+
+                var currentUserId = _userManager.GetUserId(User);
+                var selectedDate = model.Date.ToUniversalTime().Date;
+
+                var existingRecord = await _context.AttendanceRecords
+                    .FirstOrDefaultAsync(a => a.CourseId == model.CourseId 
+                        && a.StudentId == model.StudentId 
+                        && a.Date.Date == selectedDate);
+
+                if (existingRecord != null)
+                {
+                    existingRecord.Status = model.Status;
+                    existingRecord.Remarks = model.Remarks ?? string.Empty;
+                    existingRecord.MarkedById = currentUserId;
+                }
+                else
+                {
+                    var newRecord = new AttendanceRecord
+                    {
+                        CourseId = model.CourseId,
+                        StudentId = model.StudentId,
+                        Date = selectedDate,
+                        Status = model.Status,
+                        Remarks = model.Remarks ?? string.Empty,
+                        MarkedById = currentUserId,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    _context.AttendanceRecords.Add(newRecord);
+                }
+
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Attendance updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
         // POST: Attendance/MarkAll
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -286,5 +338,15 @@ namespace AttendanceSystem.Controllers
             
             return File(pdfBytes, "application/pdf", fileName);
         }
+    }
+
+    // Model for AJAX attendance update
+    public class StudentAttendanceUpdateModel
+    {
+        public int CourseId { get; set; }
+        public string StudentId { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public AttendanceStatus Status { get; set; }
+        public string? Remarks { get; set; }
     }
 }

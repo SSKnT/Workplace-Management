@@ -75,7 +75,7 @@
 }
 else
 {
-    <form asp-action="Mark" method="post">
+    <form asp-action="Mark" method="post" id="attendanceForm">
         <input type="hidden" asp-for="CourseId" value="@Model.Course.Id" />
         <input type="hidden" asp-for="SelectedDate" />
         
@@ -85,6 +85,7 @@ else
                     <i class="bi bi-people"></i> Students (@Model.StudentAttendance.Count)
                     <span class="float-end text-muted">Date: @Model.SelectedDate.ToString("MMM dd, yyyy")</span>
                 </h5>
+                <small class="text-muted"><i class="bi bi-lightning"></i> Changes are auto-saved via AJAX</small>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -113,7 +114,11 @@ else
                                     </td>
                                     <td><small class="text-muted">@Model.StudentAttendance[i].StudentEmail</small></td>
                                     <td>
-                                        <select asp-for="StudentAttendance[i].Status" class="form-select form-select-sm status-select">
+                                        <select asp-for="StudentAttendance[i].Status" 
+                                                class="form-select form-select-sm status-select"
+                                                data-student-id="@Model.StudentAttendance[i].StudentId"
+                                                data-course-id="@Model.Course.Id"
+                                                data-date="@Model.SelectedDate.ToString("yyyy-MM-dd")">
                                             <option value="0" selected="@(Model.StudentAttendance[i].Status == AttendanceStatus.Present)">Present</option>
                                             <option value="1" selected="@(Model.StudentAttendance[i].Status == AttendanceStatus.Absent)">Absent</option>
                                             <option value="2" selected="@(Model.StudentAttendance[i].Status == AttendanceStatus.Late)">Late</option>
@@ -121,8 +126,12 @@ else
                                         </select>
                                     </td>
                                     <td>
-                                        <input asp-for="StudentAttendance[i].Remarks" class="form-control form-control-sm" 
-                                               placeholder="Optional note" />
+                                        <input asp-for="StudentAttendance[i].Remarks" 
+                                               class="form-control form-control-sm" 
+                                               placeholder="Optional note"
+                                               data-student-id="@Model.StudentAttendance[i].StudentId"
+                                               data-course-id="@Model.Course.Id"
+                                               data-date="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
                                     </td>
                                 </tr>
                             }
@@ -132,8 +141,9 @@ else
             </div>
             <div class="card-footer">
                 <button type="submit" class="btn btn-success btn-lg">
-                    <i class="bi bi-check-circle"></i> Save Attendance
+                    <i class="bi bi-check-circle"></i> Save All Attendance (Fallback)
                 </button>
+                <small class="text-muted ms-3">Or just change status/remarks above - saves automatically!</small>
             </div>
         </div>
     </form>

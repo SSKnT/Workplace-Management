@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AttendanceSystem</title>
+    <title>@ViewData["Title"] - Presence</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -19,7 +19,7 @@
                 <nav class="col-md-3 col-lg-2 d-md-block sidebar">
                     <div class="position-sticky pt-3">
                         <div class="sidebar-header mb-3">
-                            <i class="bi bi-calendar-check"></i> Attendance
+                            <i class="bi bi-check-circle"></i> Presence
                         </div>
                         
                         <ul class="nav flex-column">
@@ -82,15 +82,15 @@
                             }
                         </ul>
                         
-                        <hr class="text-white-50 my-3">
+                        <hr class="my-3" style="border-color: var(--border-color);">
                         
                         <div class="px-3">
-                            <div class="text-white-50 small mb-2">
+                            <div class="small mb-2" style="color: var(--text-secondary);">
                                 <i class="bi bi-person-circle"></i> @User.Identity.Name
                             </div>
                             <form asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="btn btn-outline-light btn-sm w-100">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                <button type="submit" class="btn btn-outline-dark btn-sm w-100" style="border-color: var(--border-color);">
+                                    <i class="bi bi-box-arrow-right"></i> Sign Out
                                 </button>
                             </form>
                         </div>
@@ -111,7 +111,7 @@
             <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
                 <div class="container-fluid">
                     <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                        <i class="bi bi-calendar-check"></i> AttendanceSystem
+                        <i class="bi bi-check-circle"></i> Presence
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                         <span class="navbar-toggler-icon"></span>
@@ -128,11 +128,6 @@
                                     <i class="bi bi-box-arrow-in-right"></i> Login
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">
-                                    <i class="bi bi-person-plus"></i> Register
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -145,7 +140,7 @@
         </div>
         <footer class="border-top footer text-muted mt-5">
             <div class="container">
-                &copy; 2025 - AttendanceSystem
+                &copy; 2026 - Presence
             </div>
         </footer>
     }

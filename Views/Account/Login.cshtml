@@ -9,83 +9,93 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Attendance System</title>
+    <title>@ViewData["Title"] - Presence</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
         }
         .login-container {
-            max-width: 440px;
+            max-width: 420px;
             margin: 0 auto;
         }
         .login-card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
             overflow: hidden;
         }
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 3rem 2rem 2rem;
+            background: #ffffff;
+            padding: 3rem 2rem 1.5rem;
             text-align: center;
-            color: white;
+            color: #1a1a1a;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .login-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            color: #1a1a1a;
+        }
+        .login-icon svg {
+            width: 100%;
+            height: 100%;
         }
         .login-header h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
             margin: 0;
             letter-spacing: -0.5px;
         }
         .login-header p {
             margin: 0.5rem 0 0;
-            opacity: 0.95;
-            font-size: 0.95rem;
+            color: #6b6b6b;
+            font-size: 0.9rem;
         }
         .login-body {
-            padding: 2.5rem 2rem;
+            padding: 2rem;
         }
         .form-label {
             font-weight: 500;
-            font-size: 0.9rem;
-            color: #344054;
+            font-size: 0.875rem;
+            color: #1a1a1a;
             margin-bottom: 0.5rem;
         }
         .form-control {
-            border: 1.5px solid #e0e0e0;
-            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
             padding: 0.75rem 1rem;
             font-size: 0.95rem;
             transition: all 0.2s ease;
         }
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #1a1a1a;
+            box-shadow: 0 0 0 1px #1a1a1a;
         }
         .form-check-input:checked {
-            background-color: #667eea;
-            border-color: #667eea;
+            background-color: #1a1a1a;
+            border-color: #1a1a1a;
         }
         .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 0.875rem;
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 500;
+            font-size: 0.95rem;
             color: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.2s ease;
         }
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            background: #000000;
+            transform: translateY(-1px);
         }
         .divider {
             text-align: center;
@@ -105,26 +115,27 @@
             background: white;
             padding: 0 1rem;
             position: relative;
-            color: #6b7280;
+            color: #6b6b6b;
             font-size: 0.875rem;
         }
         .register-link {
             text-align: center;
             margin-top: 1.5rem;
-            color: #6b7280;
-            font-size: 0.95rem;
+            color: #6b6b6b;
+            font-size: 0.9rem;
         }
         .register-link a {
-            color: #667eea;
-            font-weight: 600;
+            color: #1a1a1a;
+            font-weight: 500;
             text-decoration: none;
+            border-bottom: 1px solid #1a1a1a;
         }
         .register-link a:hover {
-            text-decoration: underline;
+            border-bottom-width: 2px;
         }
         .alert {
-            border: none;
-            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
             padding: 1rem;
             margin-bottom: 1.5rem;
         }
@@ -135,7 +146,13 @@
         <div class="login-container">
             <div class="login-card">
                 <div class="login-header">
-                    <h1><i class="bi bi-calendar-check-fill"></i> Attendance System</h1>
+                    <div class="login-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M8 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h1>Presence</h1>
                     <p>Sign in to your account</p>
                 </div>
                 <div class="login-body">
@@ -172,15 +189,12 @@
                         </button>
                     </form>
                     
-                    <div class="register-link">
-                        Don't have an account? <a asp-action="Register">Create one</a>
-                    </div>
                 </div>
             </div>
             
             <div class="text-center mt-4">
-                <p class="text-white-50 small mb-0">
-                    © 2025 Attendance System. All rights reserved.
+                <p class="text-muted small mb-0">
+                    © 2026 Presence. All rights reserved.
                 </p>
             </div>
         </div>
